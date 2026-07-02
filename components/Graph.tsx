@@ -97,6 +97,7 @@ export default function Graph({ hiddenCats, selectedId, onSelect }: Props) {
     const byId = new Map(sim.map((n) => [n.id, n]));
     const view = { x: 0, y: 0, scale: 1 };
     const pointers = new Map<number, { x: number; y: number }>();
+    let viewTarget: { x: number; y: number } | null = null;
     let pinchDist = 0;
     let hovered: SimNode | null = null;
     let dragging: SimNode | null = null;
@@ -183,8 +184,23 @@ export default function Graph({ hiddenCats, selectedId, onSelect }: Props) {
       }
     }
 
+    function focusOn(n: SimNode) {
+      const W = canvas.clientWidth, H = canvas.clientHeight;
+      const mobile = W < 768;
+      const cx = mobile ? 0 : -Math.min(200, W - 500);
+      const cy = mobile ? -H * 0.26 : 0;
+      viewTarget = { x: cx - n.x * view.scale, y: cy - n.y * view.scale };
+    }
+
     function loop() {
       stepSimulation(sim, byId);
+      if (viewTarget) {
+        view.x += (viewTarget.x - view.x) * 0.1;
+        view.y += (viewTarget.y - view.y) * 0.1;
+        if (Math.abs(viewTarget.x - view.x) + Math.abs(viewTarget.y - view.y) < 1) {
+          viewTarget = null;
+        }
+      }
       draw();
       raf = requestAnimationFrame(loop);
     }
@@ -229,6 +245,7 @@ export default function Graph({ hiddenCats, selectedId, onSelect }: Props) {
         dragging.x = w.x; dragging.y = w.y;
         dragging.vx = 0; dragging.vy = 0;
       } else if (panning) {
+        viewTarget = null;
         view.x += dx; view.y += dy;
       } else {
         const h = nodeAt(px, py);
@@ -243,7 +260,11 @@ export default function Graph({ hiddenCats, selectedId, onSelect }: Props) {
       pinchDist = 0;
       const rect = canvas.getBoundingClientRect();
       const n = nodeAt(e.clientX - rect.left, e.clientY - rect.top);
-      if (!moved && pointers.size === 0) onSelectRef.current(n ? n.id : null);
+      if (!moved && pointers.size === 0) {
+        onSelectRef.current(n ? n.id : null);
+        if (n) focusOn(n);
+        else viewTarget = null;
+      }
       dragging = null;
       panning = false;
     }

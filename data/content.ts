@@ -38,7 +38,7 @@ export const nodes: GraphNode[] = [
 Étudiant, développeur et entrepreneur français. Je conçois et publie des applications mobiles et web, de l'idée jusqu'aux stores.
 
 - Études : [[neoma]] · [[berkeley]]
-- Activité [[freelance]] via ma [[micro-entreprise]]
+- Activité [[freelance]] : apps mobiles et web pour clients et en édition propre
 - Plusieurs apps publiées sur l'App Store et Google Play
 
 **Contact** : mathieu.askamp15@gmail.com`,
@@ -74,7 +74,7 @@ Lié : [[neoma]] · [[mathieu]]`,
     category: "entrepreneuriat",
     note: `# Freelance
 
-Développement d'applications mobiles et web pour des clients et en édition propre, via ma [[micro-entreprise]].
+Développement d'applications mobiles et web pour des clients et en édition propre.
 
 - [[biznest]] · [[casa-immo]] · [[liscore]] · [[sofia]] · [[riddle]]
 - Du cadrage au déploiement sur les stores`,
@@ -201,27 +201,16 @@ Workflows agentiques avec Claude Code au quotidien : c'est comme ça que ce site
     category: "competences",
     note: `# Design produit
 
-Du concept au store : onboarding, paywalls, psychologie utilisateur, branding.
+Du concept au store : onboarding, paywalls, psychologie utilisateur, branding. Utilisé sur quasiment tous mes projets.
 
-Direction artistique complète sur [[viral-company]] ("La Maison").`,
-  },
-  {
-    id: "micro-entreprise",
-    label: "Micro-entreprise",
-    category: "entrepreneuriat",
-    note: `# Micro-entreprise
-
-Créée en juin 2026 pour éditer et distribuer mes applications.
-
-- Support de mon activité [[freelance]]
-- Premiers contrats clients en développement web`,
+- [[casa-immo]] · [[liscore]] · [[sofia]] · [[riddle]] · [[biznest]]
+- Direction artistique complète sur [[viral-company]] ("La Maison")`,
   },
 ];
 
 export const links: GraphLink[] = [
   { source: "mathieu", target: "neoma" },
   { source: "mathieu", target: "berkeley" },
-  { source: "mathieu", target: "micro-entreprise" },
   { source: "mathieu", target: "freelance" },
   { source: "mathieu", target: "viral-company" },
   { source: "mathieu", target: "produit" },
@@ -231,7 +220,6 @@ export const links: GraphLink[] = [
   { source: "freelance", target: "liscore" },
   { source: "freelance", target: "sofia" },
   { source: "freelance", target: "riddle" },
-  { source: "freelance", target: "micro-entreprise" },
   { source: "viral-company", target: "viral-agency" },
   { source: "casa-immo", target: "react-native" },
   { source: "casa-immo", target: "supabase" },
@@ -243,4 +231,9 @@ export const links: GraphLink[] = [
   { source: "viral-agency", target: "nextjs" },
   { source: "viral-agency", target: "supabase" },
   { source: "sofia", target: "ia-llm" },
+  { source: "produit", target: "casa-immo" },
+  { source: "produit", target: "liscore" },
+  { source: "produit", target: "sofia" },
+  { source: "produit", target: "riddle" },
+  { source: "produit", target: "biznest" },
 ];

@@ -56,7 +56,7 @@ export default function Home() {
       </div>
 
       {selected && (
-        <div className="pointer-events-none absolute right-0 top-0 z-20 h-full w-full max-w-[400px]">
+        <div className="pointer-events-none absolute right-0 z-20 max-md:bottom-0 max-md:h-[52dvh] max-md:w-full md:top-0 md:h-full md:w-full md:max-w-[400px]">
           <NotePanel
             nodeId={selected}
             onNavigate={setSelected}

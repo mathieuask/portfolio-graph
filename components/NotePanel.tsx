@@ -58,7 +58,7 @@ export default function NotePanel({ nodeId, onNavigate, onClose }: Props) {
   const lines = node.note.split("\n");
 
   return (
-    <aside className="pointer-events-auto flex h-full w-full flex-col border-l border-[var(--border)] bg-[var(--panel-bg)] backdrop-blur-md">
+    <aside className="pointer-events-auto flex h-full w-full flex-col bg-[var(--panel-bg)] backdrop-blur-md max-md:rounded-t-2xl max-md:border-t max-md:border-[var(--border)] md:border-l md:border-[var(--border)]">
       <div className="flex items-center justify-between border-b border-[var(--border)] px-5 py-3">
         <span
           className="rounded-full px-2.5 py-0.5 text-[11px] font-medium"
