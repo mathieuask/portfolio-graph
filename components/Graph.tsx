@@ -99,6 +99,7 @@ export default function Graph({ hiddenCats, selectedId, onSelect }: Props) {
     const pointers = new Map<number, { x: number; y: number }>();
     let viewTarget: { x: number; y: number } | null = null;
     let pinchDist = 0;
+    let pinchMid = { x: 0, y: 0 };
     let hovered: SimNode | null = null;
     let dragging: SimNode | null = null;
     let panning = false;
@@ -109,10 +110,19 @@ export default function Graph({ hiddenCats, selectedId, onSelect }: Props) {
     const isHidden = (n: SimNode) =>
       n.category !== "moi" && hiddenRef.current.includes(n.category);
 
+    let scaleInit = false;
+
     function resize() {
       const dpr = window.devicePixelRatio || 1;
       canvas.width = canvas.clientWidth * dpr;
       canvas.height = canvas.clientHeight * dpr;
+      // l'échelle initiale attend une taille réelle : dans un onglet caché,
+      // clientWidth vaut 0 au montage et donnerait une échelle nulle
+      if (!scaleInit && canvas.clientWidth > 0) {
+        view.scale = Math.min(1, canvas.clientWidth / 900);
+        scaleInit = true;
+      }
+      draw();
     }
 
     function toWorld(px: number, py: number) {
@@ -120,6 +130,17 @@ export default function Graph({ hiddenCats, selectedId, onSelect }: Props) {
         x: (px - canvas.clientWidth / 2 - view.x) / view.scale,
         y: (py - canvas.clientHeight / 2 - view.y) / view.scale,
       };
+    }
+
+    function zoomAt(px: number, py: number, newScale: number) {
+      const clamped = Math.min(3, Math.max(0.35, newScale));
+      const cx = px - canvas.clientWidth / 2;
+      const cy = py - canvas.clientHeight / 2;
+      // garde le point du monde sous (px,py) immobile pendant le zoom
+      view.x = cx - ((cx - view.x) / view.scale) * clamped;
+      view.y = cy - ((cy - view.y) / view.scale) * clamped;
+      view.scale = clamped;
+      viewTarget = null;
     }
 
     function nodeAt(px: number, py: number): SimNode | null {
@@ -212,6 +233,7 @@ export default function Graph({ hiddenCats, selectedId, onSelect }: Props) {
       if (pointers.size === 2) {
         const [p1, p2] = [...pointers.values()];
         pinchDist = Math.hypot(p2.x - p1.x, p2.y - p1.y);
+        pinchMid = { x: (p1.x + p2.x) / 2, y: (p1.y + p2.y) / 2 };
         dragging = null;
         panning = false;
         return;
@@ -231,11 +253,16 @@ export default function Graph({ hiddenCats, selectedId, onSelect }: Props) {
       if (pointers.size === 2) {
         const [p1, p2] = [...pointers.values()];
         const d = Math.hypot(p2.x - p1.x, p2.y - p1.y);
+        const mid = { x: (p1.x + p2.x) / 2, y: (p1.y + p2.y) / 2 };
+        view.x += mid.x - pinchMid.x;
+        view.y += mid.y - pinchMid.y;
         if (pinchDist > 0) {
-          view.scale = Math.min(3, Math.max(0.35, view.scale * (d / pinchDist)));
+          zoomAt(mid.x, mid.y, view.scale * (d / pinchDist));
         }
         pinchDist = d;
+        pinchMid = mid;
         moved = true;
+        draw();
         return;
       }
       const dx = px - last.x, dy = py - last.y;
@@ -278,13 +305,18 @@ export default function Graph({ hiddenCats, selectedId, onSelect }: Props) {
 
     function onWheel(e: WheelEvent) {
       e.preventDefault();
+      const rect = canvas.getBoundingClientRect();
       const factor = e.deltaY < 0 ? 1.08 : 0.93;
-      view.scale = Math.min(3, Math.max(0.35, view.scale * factor));
+      zoomAt(e.clientX - rect.left, e.clientY - rect.top, view.scale * factor);
+      draw();
     }
 
+    // layout pré-calculé + premier dessin synchrone : le graphe est visible
+    // même si requestAnimationFrame est throttlé (onglet caché, mode éco)
+    for (let i = 0; i < 150; i++) stepSimulation(sim, byId);
     resize();
-    view.scale = Math.min(1, canvas.clientWidth / 900);
-    window.addEventListener("resize", resize);
+    const observer = new ResizeObserver(resize);
+    observer.observe(canvas);
     canvas.addEventListener("pointerdown", onPointerDown);
     canvas.addEventListener("pointermove", onPointerMove);
     canvas.addEventListener("pointerup", onPointerUp);
@@ -294,7 +326,7 @@ export default function Graph({ hiddenCats, selectedId, onSelect }: Props) {
 
     return () => {
       cancelAnimationFrame(raf);
-      window.removeEventListener("resize", resize);
+      observer.disconnect();
       canvas.removeEventListener("pointerdown", onPointerDown);
       canvas.removeEventListener("pointermove", onPointerMove);
       canvas.removeEventListener("pointerup", onPointerUp);
