@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Graph from "@/components/Graph";
 import NotePanel from "@/components/NotePanel";
+import Booking from "@/components/Booking";
 import { nodes, CATEGORY_COLORS, CATEGORY_LABELS, Category } from "@/data/content";
 
 const CATS: Category[] = ["etudes", "projets", "competences", "entrepreneuriat"];
@@ -64,6 +65,8 @@ export default function Home() {
           />
         </div>
       )}
+
+      <Booking />
     </main>
   );
 }
