@@ -1,6 +1,7 @@
 "use client";
 
 import { nodes, CATEGORY_COLORS, CATEGORY_LABELS } from "@/data/content";
+import Image from "next/image";
 import { Fragment } from "react";
 
 interface Props {
@@ -77,13 +78,31 @@ export default function NotePanel({ nodeId, onNavigate, onClose }: Props) {
 
       <div
         className="relative flex h-20 shrink-0 items-end overflow-hidden px-5 pb-2"
-        style={{
-          background: `linear-gradient(${115 + (hash(node.id) % 60)}deg, ${catColor}, color-mix(in srgb, ${catColor} 30%, var(--bg)))`,
-        }}
+        style={
+          node.image && node.imageFit === "contain"
+            ? { background: "#fff" }
+            : {
+                background: `linear-gradient(${115 + (hash(node.id) % 60)}deg, ${catColor}, color-mix(in srgb, ${catColor} 30%, var(--bg)))`,
+              }
+        }
       >
-        <span className="absolute -right-1 -top-5 select-none text-[84px] font-bold leading-none text-white/15">
-          {initials(node.label)}
-        </span>
+        {node.image?.endsWith(".svg") ? (
+          // next/image passe les SVG par l'optimiseur (désactivé par défaut, risque XSS) : rendu direct
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={node.image} alt="" className="h-full w-full object-contain p-6" />
+        ) : node.image ? (
+          <Image
+            src={node.image}
+            alt=""
+            fill
+            sizes="400px"
+            className={node.imageFit === "contain" ? "object-contain p-4" : "object-cover"}
+          />
+        ) : (
+          <span className="absolute -right-1 -top-5 select-none text-[84px] font-bold leading-none text-white/15">
+            {initials(node.label)}
+          </span>
+        )}
       </div>
 
       <div className="flex-1 overflow-y-auto px-5 py-4 text-[14px] leading-relaxed text-[var(--text-body)]">

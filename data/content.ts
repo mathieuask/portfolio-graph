@@ -5,6 +5,10 @@ export interface GraphNode {
   label: string;
   category: Category;
   note: string;
+  /** logo/illustration affiché en bandeau dans le panneau de note */
+  image?: string;
+  /** "contain" pour un logo (fond visible), "cover" pour une illustration plein cadre */
+  imageFit?: "contain" | "cover";
 }
 
 export interface GraphLink {
@@ -47,6 +51,8 @@ export const nodes: GraphNode[] = [
     id: "neoma",
     label: "NEOMA Business School",
     category: "etudes",
+    image: "/logos/neoma.png",
+    imageFit: "contain",
     note: `# NEOMA Business School
 
 Programme Grande École. Formation en management, marketing et stratégie.
@@ -60,6 +66,8 @@ Lié : [[berkeley]] · [[mathieu]]`,
     id: "berkeley",
     label: "UC Berkeley",
     category: "etudes",
+    image: "/logos/berkeley.svg",
+    imageFit: "contain",
     note: `# UC Berkeley
 
 Programme académique à l'université de Californie, Berkeley.
@@ -94,6 +102,8 @@ Projet freelance en cours.
     id: "casa-immo",
     label: "Casa Immo",
     category: "projets",
+    image: "/logos/casa-immo.png",
+    imageFit: "cover",
     note: `# Casa Immo
 
 Application mobile immobilière, **live sur l'App Store** (v2.0.4) et en test fermé sur Google Play.
@@ -106,6 +116,8 @@ Application mobile immobilière, **live sur l'App Store** (v2.0.4) et en test fe
     id: "liscore",
     label: "Link AI",
     category: "projets",
+    image: "/logos/link-ai.png",
+    imageFit: "cover",
     note: `# Link AI
 
 Application mobile **lancée sur les stores**. Analyse et scoring assisté par [[ia-llm]].
@@ -117,6 +129,8 @@ Application mobile **lancée sur les stores**. Analyse et scoring assisté par [
     id: "sofia",
     label: "Sofia",
     category: "projets",
+    image: "/logos/sofia.png",
+    imageFit: "cover",
     note: `# Sofia
 
 Compagnon de révision pour le Bac, propulsé par l'[[ia-llm]].`,
